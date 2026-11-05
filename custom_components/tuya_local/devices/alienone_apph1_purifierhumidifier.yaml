@@ -1,0 +1,221 @@
+name: Air purifier humidifier
+products:
+  - id: wrnpbaqmg2hffff4
+    manufacturer: ALIENONE
+    model: AP-PH1
+# Observed on the unit: switching off (dp 1) resets the mode (dp 24) to
+# "first" and the display (dp 6) to "00", and it comes back on that way.
+entities:
+  - entity: fan
+    translation_key: air_purifier
+    dps:
+      - id: 1
+        type: boolean
+        name: switch
+      - id: 24
+        type: string
+        name: speed
+        mapping:
+          - dps_val: first
+            value: 33
+          - dps_val: second
+            value: 67
+          - dps_val: third
+            value: 100
+          - dps_val: sleep
+            value: null
+            hidden: true
+          - dps_val: auto
+            value: null
+            hidden: true
+      - id: 24
+        type: string
+        name: preset_mode
+        mapping:
+          - dps_val: auto
+            value: auto
+          - dps_val: sleep
+            value: sleep
+          - dps_val: first
+            value: null
+            hidden: true
+          - dps_val: second
+            value: null
+            hidden: true
+          - dps_val: third
+            value: null
+            hidden: true
+  - entity: humidifier
+    class: humidifier
+    dps:
+      # dp 3 "0" stops humidifying while the purifier keeps running. Turning
+      # the humidifier on from off selects "6" (auto); while it is on, it
+      # keeps the current level. The target and mode can't be set while
+      # humidifying is off, as setting them would turn it back on.
+      - id: 3
+        type: string
+        name: switch
+        mapping:
+          - dps_val: "0"
+            value: false
+          - dps_val: "6"
+            value: true
+            conditions:
+              - dps_val: "1"
+                mapping:
+                  - dps_val: "1"
+                    value: true
+              - dps_val: "2"
+                mapping:
+                  - dps_val: "2"
+                    value: true
+              - dps_val: "3"
+                mapping:
+                  - dps_val: "3"
+                    value: true
+              - dps_val: "4"
+                mapping:
+                  - dps_val: "4"
+                    value: true
+              - dps_val: "5"
+                mapping:
+                  - dps_val: "5"
+                    value: true
+          - value: true
+            hidden: true
+      - id: 1
+        type: boolean
+        name: available
+      - id: 3
+        type: string
+        name: humidity
+        range:
+          min: 45
+          max: 85
+        mapping:
+          - dps_val: "0"
+            value: null
+            hidden: true
+          - dps_val: "1"
+            value: 45
+            step: 10
+            conditions:
+              - dps_val: "0"
+                invalid: true
+          - dps_val: "2"
+            value: 55
+            step: 10
+            conditions:
+              - dps_val: "0"
+                invalid: true
+          - dps_val: "3"
+            value: 65
+            step: 10
+            conditions:
+              - dps_val: "0"
+                invalid: true
+          - dps_val: "4"
+            value: 75
+            step: 10
+            conditions:
+              - dps_val: "0"
+                invalid: true
+          - dps_val: "5"
+            value: 85
+            step: 10
+            conditions:
+              - dps_val: "0"
+                invalid: true
+          - dps_val: "6"
+            value: null
+            hidden: true
+      - id: 3
+        type: string
+        name: mode
+        mapping:
+          - dps_val: "6"
+            value: auto
+            conditions:
+              - dps_val: "0"
+                invalid: true
+          - dps_val: "2"
+            value: normal
+            conditions:
+              - dps_val: "0"
+                invalid: true
+          - value: normal
+            hidden: true
+      - id: 14
+        type: integer
+        name: current_humidity
+  - entity: sensor
+    class: temperature
+    dps:
+      - id: 10
+        type: integer
+        name: sensor
+        unit: C
+        class: measurement
+  - entity: sensor
+    class: pm25
+    dps:
+      - id: 31
+        type: integer
+        name: sensor
+        unit: ugm3
+        class: measurement
+  - entity: select
+    translation_key: display_brightness
+    category: config
+    dps:
+      - id: 6
+        type: string
+        name: option
+        mapping:
+          - dps_val: "00"
+            value: "off"
+          - dps_val: "30"
+            value: dim
+          - dps_val: "100"
+            value: bright
+  - entity: lock
+    translation_key: child_lock
+    category: config
+    dps:
+      - id: 29
+        type: boolean
+        name: lock
+  - entity: select
+    translation_key: timer
+    category: config
+    dps:
+      - id: 19
+        type: string
+        name: option
+        mapping:
+          - dps_val: cancel
+            value: cancel
+          - dps_val: 1h
+            value: 1h
+          - dps_val: 2h
+            value: 2h
+          - dps_val: 3h
+            value: 3h
+          - dps_val: 4h
+            value: 4h
+          - dps_val: 5h
+            value: 5h
+          - dps_val: 6h
+            value: 6h
+  - entity: select
+    translation_key: temperature_unit
+    category: config
+    dps:
+      - id: 18
+        type: string
+        name: option
+        mapping:
+          - dps_val: c
+            value: celsius
+          - dps_val: f
+            value: fahrenheit

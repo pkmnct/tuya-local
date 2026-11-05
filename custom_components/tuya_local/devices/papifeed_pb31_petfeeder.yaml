@@ -1,0 +1,121 @@
+name: Pet feeder
+products:
+  - id: ebev2hcjnfdazyqu
+    manufacturer: Papifeed
+    model: PB-31
+entities:
+  - entity: number
+    translation_key: manual_feed
+    dps:
+      - id: 3
+        type: integer
+        name: value
+        unit: portions
+        range:
+          min: 1
+          max: 12
+  - entity: sensor
+    translation_key: status
+    class: enum
+    category: diagnostic
+    dps:
+      - id: 4
+        type: string
+        name: sensor
+        mapping:
+          - dps_val: standby
+            value: standby
+          - dps_val: feeding
+            value: feeding
+          - dps_val: done
+            value: feeding_complete
+  # Backup batteries (4 x AA); reads 0 when none are fitted.
+  - entity: sensor
+    class: battery
+    dps:
+      - id: 10
+        type: integer
+        name: sensor
+        unit: "%"
+  - entity: binary_sensor
+    class: problem
+    category: diagnostic
+    dps:
+      - id: 13
+        type: bitfield
+        name: sensor
+        mapping:
+          - dps_val: 0
+            value: false
+          - value: true
+      - id: 13
+        type: bitfield
+        name: fault_code
+  - entity: binary_sensor
+    name: Food blockage
+    class: problem
+    category: diagnostic
+    dps:
+      - id: 13
+        type: bitfield
+        name: sensor
+        mapping:
+          - dps_val: 1
+            value: true
+          - value: false
+  - entity: binary_sensor
+    name: Food shortage
+    class: problem
+    category: diagnostic
+    dps:
+      - id: 13
+        type: bitfield
+        name: sensor
+        mapping:
+          - dps_val: 2
+            value: true
+          - value: false
+  - entity: binary_sensor
+    translation_key: tank_empty
+    category: diagnostic
+    dps:
+      - id: 13
+        type: bitfield
+        name: sensor
+        mapping:
+          - dps_val: 4
+            value: true
+          - value: false
+  - entity: binary_sensor
+    name: Desiccant exhausted
+    class: problem
+    category: diagnostic
+    dps:
+      - id: 13
+        type: bitfield
+        name: sensor
+        mapping:
+          - dps_val: 8
+            value: true
+          - value: false
+  - entity: event
+    name: Feed report
+    dps:
+      - id: 14
+        type: integer
+        name: event
+        mapping:
+          - dps_val: null
+            value: null
+          - dps_val: 0
+            value: null
+          - value: Fed
+      - id: 14
+        type: integer
+        name: portions
+  - entity: switch
+    icon: "mdi:cat"
+    dps:
+      - id: 25
+        type: boolean
+        name: switch
